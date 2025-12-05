@@ -154,7 +154,7 @@ const Home = () => {
                 transition={{ delay: 0.6, duration: 0.6 }}
                 className="mt-8 flex flex-col sm:flex-row gap-4"
               >
-                {/* PRIMARY BUTTON — GRADIENT BLUE */}
+                {/* PRIMARY BUTTON — Goes to Services (Public) */}
                 <Button
                   asChild
                   size="lg"
@@ -163,10 +163,10 @@ const Home = () => {
                              text-white font-semibold shadow-xl
                              hover:scale-[1.03] transition"
                 >
-                  <Link to="/app/services">Explore Services</Link>
+                  <Link to="/services">Explore Services</Link>
                 </Button>
 
-                {/* SECONDARY BUTTON — LIGHT BLUE GLASS */}
+                {/* SECONDARY BUTTON — Goes to Contact (Public) */}
                 <Button
                   asChild
                   size="lg"
@@ -177,7 +177,7 @@ const Home = () => {
                              hover:bg-blue-600/30 hover:text-white
                              transition"
                 >
-                  <Link to="/app/contact">Book Appointment</Link>
+                  <Link to="/contact">Book Appointment</Link>
                 </Button>
               </motion.div>
 
@@ -266,7 +266,7 @@ const Home = () => {
                    text-white font-semibold shadow-xl
                    hover:scale-[1.03] transition"
       >
-        <Link to="/app/contact">Schedule a Consultation</Link>
+        <Link to="/contact">Schedule a Consultation</Link>
       </Button>
     </motion.div>
   </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import API from "./api";
 import { useNavigate, Link } from "react-router-dom";
+import { ArrowLeft, Home } from "lucide-react";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -19,32 +20,32 @@ export default function Register() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleRegister = async (e) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
       await API.post("/auth/register", formData);
       setStep(2);
-    } catch (err) {
+    } catch (err: any) {
       setError(err?.response?.data?.detail || "Registration failed.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOtpVerify = async (e) => {
+  const handleOtpVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
       await API.post("/auth/verify-otp", { email: formData.email, otp });
       navigate("/auth/login");
-    } catch (err) {
+    } catch (err: any) {
       setError(err?.response?.data?.detail || "OTP verification failed.");
     } finally {
       setLoading(false);
@@ -66,10 +67,30 @@ export default function Register() {
       {/* Subtle Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0e1b33]/40 via-black/20 to-[#0c2d4a]/40"></div>
 
+      {/* 🏠 BACK TO HOME BUTTON - Top Left */}
+      <Link
+        to="/"
+        className="
+          absolute top-6 left-6 z-20
+          flex items-center gap-2 
+          px-4 py-2 
+          bg-white/90 hover:bg-white
+          text-blue-600 font-medium
+          rounded-full shadow-lg
+          transition-all duration-300
+          hover:scale-105 hover:shadow-xl
+          backdrop-blur-sm
+        "
+      >
+        <ArrowLeft size={18} />
+        <span className="hidden sm:inline">Back to Home</span>
+        <Home size={18} className="sm:hidden" />
+      </Link>
+
       {/* Card Container */}
       <div
         className="
-          relative z-10 w-full max-w-xl p-12
+          relative z-10 w-full max-w-xl p-12 mx-4
           bg-white/80 backdrop-blur-2xl
           rounded-3xl border border-gray-200/60
           shadow-[0_4px_20px_rgba(0,0,0,0.08)]
@@ -138,7 +159,7 @@ export default function Register() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="your@gmai.com"
+                  placeholder="your@gmail.com"
                   className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 
                   focus:border-[#1446A0] focus:ring-2 focus:ring-[#1446A0]/30 transition"
                 />
@@ -203,7 +224,7 @@ export default function Register() {
               type="submit"
               disabled={loading}
               className="w-full bg-[#1446A0] hover:bg-[#0e3578] text-white font-semibold py-3 rounded-xl 
-              transition-all shadow-md hover:shadow-lg"
+              transition-all shadow-md hover:shadow-lg disabled:opacity-50"
             >
               {loading ? "Registering..." : "Register"}
             </button>
@@ -237,7 +258,7 @@ export default function Register() {
               type="submit"
               disabled={loading}
               className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl 
-              transition-all shadow-md hover:shadow-lg"
+              transition-all shadow-md hover:shadow-lg disabled:opacity-50"
             >
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
@@ -248,6 +269,17 @@ export default function Register() {
           Already have an account?
           <Link to="/auth/login" className="text-[#1446A0] font-semibold ml-1">
             Login
+          </Link>
+        </div>
+
+        {/* 🏠 Bottom Home Link */}
+        <div className="mt-4 text-center">
+          <Link
+            to="/"
+            className="text-sm text-gray-600 hover:text-blue-600 transition flex items-center justify-center gap-1"
+          >
+            <Home size={16} />
+            Return to homepage
           </Link>
         </div>
       </div>

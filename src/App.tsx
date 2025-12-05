@@ -83,33 +83,34 @@ export default function App() {
           <Sonner />
 
           <Routes>
-            {/* 🔐 AUTH ENTRY */}
-            <Route path="/" element={<Navigate to="/auth/login" replace />} />
+            {/* 🌐 PUBLIC LANDING PAGES - Accessible to everyone */}
+            <Route path="/" element={<WebsiteLayout />}>
+              <Route index element={<Home />} />
+              <Route path="services" element={<Services />} />
+              <Route path="blogs" element={<Blogs />} />
+              <Route path="contact" element={<Contact />} />
+            </Route>
+
+            {/* 🔐 AUTH PAGES */}
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/reset-password" element={<ResetPassword />} />
 
-
-            {/* 🌐 AUTHENTICATED WEBSITE ROUTES */}
+            {/* 👤 AUTHENTICATED USER AREA */}
             <Route
-              path="/app"
-              element={
-                <UserPrivateRoute>
-                  <WebsiteLayout />
-                </UserPrivateRoute>
-              }
-            >
-              <Route index element={<Home />} />
-              <Route path="services" element={<Services />} />
-              <Route path="blogs" element={<Blogs />} />
-              <Route path="contact" element={<Contact />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="*" element={<NotFound />} />
-              
-            </Route>
+  path="/app"
+  element={
+    <UserPrivateRoute>
+      <WebsiteLayout />
+    </UserPrivateRoute>
+  }
+>
+  <Route index element={<Home />} />
+  <Route path="profile" element={<Profile />} />
+</Route>
 
-            {/* 🧱 ADMIN ROUTES (No Navbar/Footer) */}
+            {/* 🧱 ADMIN ROUTES */}
             <Route
               path="/admin/login"
               element={
@@ -164,7 +165,7 @@ export default function App() {
             />
 
             {/* ❌ Fallback */}
-            <Route path="*" element={<Navigate to="/auth/login" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

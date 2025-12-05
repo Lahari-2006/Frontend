@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import API from "./api";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Home } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
+
+  // Get the page user came from (if redirected from Services/Contact)
+  const from = (location.state as any)?.from || "/app";
+  const message = (location.state as any)?.message;
 
   const [formData, setFormData] = useState({
     email: "",
@@ -12,6 +20,17 @@ export default function Login() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Show message if user was redirected (e.g., "Login to book this service")
+  useEffect(() => {
+    if (message) {
+      toast({
+        title: "Login Required",
+        description: message,
+        variant: "default",
+      });
+    }
+  }, [message, toast]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,9 +43,25 @@ export default function Login() {
 
     try {
       const response = await API.post("/auth/login", formData);
+      
+      // Store auth data
       localStorage.setItem("token", response.data.access_token);
       localStorage.setItem("userRole", response.data.role);
-      navigate(response.data.role === "admin" ? "/admin/dashboard" : "/app");
+      localStorage.setItem("user", JSON.stringify(response.data.user || { email: formData.email }));
+
+      // Show success message
+      toast({
+        title: "Login Successful!",
+        description: "Welcome back to RB Financial Consultancy",
+      });
+
+      // Redirect based on role
+      if (response.data.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        // 🔥 Redirect back to where they came from (Services/Contact) or to /app
+        navigate(from, { replace: true });
+      }
     } catch (err: any) {
       setError(err?.response?.data?.detail || "Invalid email or password");
     } finally {
@@ -48,8 +83,28 @@ export default function Login() {
 
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
 
+      {/* 🏠 BACK TO HOME BUTTON - Top Left */}
+      <Link
+        to="/"
+        className="
+          absolute top-6 left-6 z-20
+          flex items-center gap-2 
+          px-4 py-2 
+          bg-white/90 hover:bg-white
+          text-blue-600 font-medium
+          rounded-full shadow-lg
+          transition-all duration-300
+          hover:scale-105 hover:shadow-xl
+          backdrop-blur-sm
+        "
+      >
+        <ArrowLeft size={18} />
+        <span className="hidden sm:inline">Back to Home</span>
+        <Home size={18} className="sm:hidden" />
+      </Link>
+
       {/* LOGIN CARD */}
-      <div className="relative z-10 bg-white/85 backdrop-blur-xl shadow-2xl rounded-3xl w-full max-w-lg p-10 border border-white/40">
+      <div className="relative z-10 bg-white/85 backdrop-blur-xl shadow-2xl rounded-3xl w-full max-w-lg p-10 border border-white/40 mx-4">
 
         <div className="text-center mb-6">
           <h1 className="text-4xl font-bold text-blue-900 mb-1">
@@ -114,14 +169,25 @@ export default function Login() {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition shadow-md disabled:opacity-50"
           >
-            {loading ? "Signing in.." : "Login"}
+            {loading ? "Signing in..." : "Login"}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-700">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link to="/auth/register" className="text-blue-600 font-semibold">
             Sign Up
+          </Link>
+        </div>
+
+        {/* 🏠 ALTERNATIVE: Back to Home Link at Bottom */}
+        <div className="mt-4 text-center">
+          <Link
+            to="/"
+            className="text-sm text-gray-600 hover:text-blue-600 transition flex items-center justify-center gap-1"
+          >
+            <Home size={16} />
+            Return to homepage
           </Link>
         </div>
       </div>

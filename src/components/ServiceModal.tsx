@@ -50,7 +50,6 @@ const ServiceModal = ({ isOpen, onClose, service }: ServiceModalProps) => {
     try {
       setSubmitting(true);
 
-      // ✅ FIXED: Correct backend route
       await API.post("/appointments/website", {
         name: formData.name,
         email: formData.email,
@@ -90,7 +89,7 @@ const ServiceModal = ({ isOpen, onClose, service }: ServiceModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">{service?.name}</DialogTitle>
           <DialogDescription className="text-base">
@@ -141,6 +140,7 @@ const ServiceModal = ({ isOpen, onClose, service }: ServiceModalProps) => {
               type="date"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              min={new Date().toISOString().split('T')[0]}
               required
             />
           </div>

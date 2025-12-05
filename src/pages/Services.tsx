@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import ServiceCard from "@/components/ServiceCard";
 import ServiceModal from "@/components/ServiceModal";
 import { servicesData, SubService } from "@/data/servicesData";
@@ -11,8 +12,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Lock } from "lucide-react";
 
 const Services = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const isLoggedIn = Boolean(token);
+
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<SubService | null>(null);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
@@ -22,6 +28,17 @@ const Services = () => {
   };
 
   const handleServiceClick = (service: SubService) => {
+    // 🔒 Check if user is logged in before allowing booking
+    if (!isLoggedIn) {
+      navigate("/auth/login", { 
+        state: { 
+          from: "/services",
+          message: "Please login to book this service" 
+        } 
+      });
+      return;
+    }
+
     setSelectedService(service);
     setSelectedCategory(null);
     setIsServiceModalOpen(true);
@@ -48,6 +65,19 @@ const Services = () => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Comprehensive financial and compliance solutions tailored to your business needs.
           </p>
+
+          {/* 🔥 Login Prompt for Non-Logged Users */}
+          {!isLoggedIn && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-blue-50 border border-blue-200 rounded-full text-blue-700 text-sm font-medium"
+            >
+              <Lock size={16} />
+              <span>Login to book our services</span>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Category Grid */}
@@ -108,9 +138,10 @@ const Services = () => {
 
                 <Button
                   variant="link"
-                  className="mt-2 p-0 h-auto text-blue-600 font-medium"
+                  className="mt-2 p-0 h-auto text-blue-600 font-medium flex items-center gap-2"
                 >
-                  Book this service →
+                  {!isLoggedIn && <Lock size={14} />}
+                  {isLoggedIn ? "Book this service →" : "Login to book →"}
                 </Button>
               </motion.div>
             ))}
@@ -118,15 +149,17 @@ const Services = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Service Booking Modal */}
-      <ServiceModal
-        isOpen={isServiceModalOpen}
-        onClose={() => {
-          setIsServiceModalOpen(false);
-          setSelectedService(null);
-        }}
-        service={selectedService}
-      />
+      {/* Service Booking Modal - Only shows if logged in */}
+      {isLoggedIn && (
+        <ServiceModal
+          isOpen={isServiceModalOpen}
+          onClose={() => {
+            setIsServiceModalOpen(false);
+            setSelectedService(null);
+          }}
+          service={selectedService}
+        />
+      )}
     </div>
   );
 };
