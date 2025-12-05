@@ -81,27 +81,8 @@ export default function Login() {
         }}
       />
 
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-
-      {/* 🏠 BACK TO HOME BUTTON - Top Left */}
-      <Link
-        to="/"
-        className="
-          absolute top-6 left-6 z-20
-          flex items-center gap-2 
-          px-4 py-2 
-          bg-white/90 hover:bg-white
-          text-blue-600 font-medium
-          rounded-full shadow-lg
-          transition-all duration-300
-          hover:scale-105 hover:shadow-xl
-          backdrop-blur-sm
-        "
-      >
-        <ArrowLeft size={18} />
-        <span className="hidden sm:inline">Back to Home</span>
-        <Home size={18} className="sm:hidden" />
-      </Link>
+     
+       
 
       {/* LOGIN CARD */}
       <div className="relative z-10 bg-white/85 backdrop-blur-xl shadow-2xl rounded-3xl w-full max-w-lg p-10 border border-white/40 mx-4">

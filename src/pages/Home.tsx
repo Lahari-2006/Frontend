@@ -177,7 +177,7 @@ const Home = () => {
                              hover:bg-blue-600/30 hover:text-white
                              transition"
                 >
-                  <Link to="/contact">Book Appointment</Link>
+                  <Link to="/contact">Contact Us</Link>
                 </Button>
               </motion.div>
 
