@@ -4,14 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, Phone, Edit3, ShieldCheck } from "lucide-react";
+import { User, Mail, Phone, Edit3, ShieldCheck, CalendarClock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import API from "./api";
+
+type Appointment = {
+  id: string;
+  service_type: string;
+  date: string;
+  time?: string;
+  status: string;
+};
 
 const Profile = () => {
   const { toast } = useToast();
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(true);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -24,12 +34,11 @@ const Profile = () => {
   // --------------------------------------------------
   useEffect(() => {
     const fetchProfileData = async () => {
-      const token = localStorage.getItem("token");
-
       try {
-        const profileRes = await API.get("/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const [profileRes, apptRes] = await Promise.all([
+          API.get("/profile"),
+          API.get("/appointments/me"),
+        ]);
 
         setFormData({
           name: profileRes.data.name,
@@ -37,14 +46,16 @@ const Profile = () => {
           phone: profileRes.data.phone || "",
         });
 
+        setAppointments(apptRes.data || []);
       } catch (error) {
         toast({
           title: "Error",
-          description: "Failed to load profile data",
+          description: "Failed to load your data",
           variant: "destructive",
         });
       } finally {
         setLoading(false);
+        setAppointmentsLoading(false);
       }
     };
 
@@ -230,6 +241,64 @@ const Profile = () => {
               </div>
             ))}
           </motion.div>
+        </motion.div>
+
+        {/* BOOKINGS LIST */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mt-10"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-full bg-blue-100 text-blue-700">
+              <CalendarClock size={18} />
+            </div>
+            <h2 className="text-xl font-semibold text-blue-900">
+              Your Booked Services
+            </h2>
+          </div>
+
+          <div className="bg-white shadow-md rounded-2xl border border-blue-100">
+            {appointmentsLoading ? (
+              <div className="p-6 text-gray-600">Loading your appointments...</div>
+            ) : appointments.length === 0 ? (
+              <div className="p-6 text-gray-600">No bookings yet.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="bg-blue-50 text-blue-900">
+                      <th className="text-left px-4 py-3">Service</th>
+                      <th className="text-left px-4 py-3">Date</th>
+                      <th className="text-left px-4 py-3">Time</th>
+                      <th className="text-left px-4 py-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {appointments.map((a) => (
+                      <tr key={a.id} className="border-t border-gray-100">
+                        <td className="px-4 py-3 font-medium text-gray-900">
+                          {a.service_type}
+                        </td>
+                        <td className="px-4 py-3 text-gray-700">
+                          {new Date(a.date).toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-3 text-gray-700">
+                          {a.time || "—"}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                            {a.status.charAt(0).toUpperCase() + a.status.slice(1)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </motion.div>
       </div>
     </div>
