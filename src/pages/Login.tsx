@@ -43,7 +43,7 @@ export default function Login() {
 
     try {
       const response = await API.post("/auth/login", formData);
-      
+
       // Store auth data
       localStorage.setItem("token", response.data.access_token);
       localStorage.setItem("userRole", response.data.role);
@@ -68,6 +68,14 @@ export default function Login() {
       setLoading(false);
     }
   };
+  <Link
+    to="/admin/login"
+    className="text-gray-400 text-xs hover:text-gray-700 fixed bottom-3 right-3"
+    title="Admin Access"
+  >
+    ⚙️
+  </Link>
+
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -81,97 +89,110 @@ export default function Login() {
         }}
       />
 
-     
-       
+
+
 
       {/* LOGIN CARD */}
       <div className="relative z-10 bg-white/85 backdrop-blur-xl shadow-2xl rounded-3xl w-full max-w-lg p-10 border border-white/40 mx-4">
 
-        <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-blue-900 mb-1">
-            Welcome Back
-          </h1>
-          <p className="text-gray-600 text-sm">
-            Login to manage your accounts.
-          </p>
+        {/* your login card content here */}
+
+        {/* 🔐 Secret Admin Button */}
+        <Link
+          to="/admin/login"
+          className="absolute bottom-2 right-2 text-gray-300 hover:text-gray-600 text-sm"
+          title="Admin Access"
+        >
+          ⚙️
+        </Link>
+   
+
+
+      <div className="text-center mb-6">
+        <h1 className="text-4xl font-bold text-blue-900 mb-1">
+          Welcome Back
+        </h1>
+        <p className="text-gray-600 text-sm">
+          Login to manage your accounts.
+        </p>
+      </div>
+
+      <form onSubmit={handleLogin} className="space-y-5">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="you@gmail.com"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl 
+              focus:ring-2 focus:ring-blue-500 transition bg-white"
+          />
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="you@gmail.com"
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            required
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl 
               focus:ring-2 focus:ring-blue-500 transition bg-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              required
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl 
-              focus:ring-2 focus:ring-blue-500 transition bg-white"
-            />
-          </div>
-
-          {/* ⭐ Forgot Password Link */}
-          <div className="text-right -mt-3">
-            <Link
-              to="/auth/forgot-password"
-              className="text-blue-600 hover:underline text-sm font-medium"
-            >
-              Forgot Password?
-            </Link>
-          </div>
-
-          {error && (
-            <p className="text-red-600 text-sm text-center bg-red-100 py-2 rounded-lg">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition shadow-md disabled:opacity-50"
-          >
-            {loading ? "Signing in..." : "Login"}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center text-sm text-gray-700">
-          Don't have an account?{" "}
-          <Link to="/auth/register" className="text-blue-600 font-semibold">
-            Sign Up
-          </Link>
+          />
         </div>
 
-        {/* 🏠 ALTERNATIVE: Back to Home Link at Bottom */}
-        <div className="mt-4 text-center">
+        {/* ⭐ Forgot Password Link */}
+        <div className="text-right -mt-3">
           <Link
-            to="/"
-            className="text-sm text-gray-600 hover:text-blue-600 transition flex items-center justify-center gap-1"
+            to="/auth/forgot-password"
+            className="text-blue-600 hover:underline text-sm font-medium"
           >
-            <Home size={16} />
-            Return to homepage
+            Forgot Password?
           </Link>
         </div>
+
+        {error && (
+          <p className="text-red-600 text-sm text-center bg-red-100 py-2 rounded-lg">
+            {error}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition shadow-md disabled:opacity-50"
+        >
+          {loading ? "Signing in..." : "Login"}
+        </button>
+      </form>
+
+      <div className="mt-6 text-center text-sm text-gray-700">
+        Don't have an account?{" "}
+        <Link to="/auth/register" className="text-blue-600 font-semibold">
+          Sign Up
+        </Link>
+      </div>
+
+      {/* 🏠 ALTERNATIVE: Back to Home Link at Bottom */}
+      <div className="mt-4 text-center">
+        <Link
+          to="/"
+          className="text-sm text-gray-600 hover:text-blue-600 transition flex items-center justify-center gap-1"
+        >
+          <Home size={16} />
+          Return to homepage
+        </Link>
       </div>
     </div>
+    </div >
   );
 }
